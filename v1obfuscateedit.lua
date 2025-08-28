@@ -1,12 +1,377 @@
---[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.10.9) ~  Much Love, Ferib 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
-]]--
+-- ===== Functions to get closest player =====
+local currentGuardTarget = nil
+local currentPlayerTarget = nil
 
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v26,v27) local v28={};_G.Cs={UQSDDAA=3,YASDMRXA=1,YASa0AVV=2};for v46=1, #v26 do v6(v28,v0(v4(v1(v2(v26,v46,v46 +  #Cs + 1 )),v1(v2(v27,1 + (v46% #v27) ,1 + (v46% #v27) + 1 )))%256 ));end return v5(v28);end local v8=game:GetService(v7("\225\207\218\60\227\169\212","\126\177\163\187\69\134\219\167"));local v9=game:GetService(v7("\17\216\36\246\249\49\219\35\198\249","\156\67\173\74\165"));local v10=v8.LocalPlayer;local v11=workspace.CurrentCamera;local function v12() local v29=nil;local v30=math.huge;if ( not v10.Character or  not v10.Character:FindFirstChild(v7("\28\162\68\23\178\41\79\48\133\70\25\168\22\71\38\163","\38\84\215\41\118\220\70"))) then return nil;end local v31=v10.Character.HumanoidRootPart.Position;for v47,v48 in pairs(v8:GetPlayers()) do if (v48.Team and (v48.Team.Name==v7("\119\3\35\0\250","\158\48\118\66\114")) and v48.Character and v48.Character:FindFirstChild(v7("\131\33\17\50","\155\203\68\112\86\19\197")) and v48.Character:FindFirstChild(v7("\110\200\59\253\78\119\236\252","\152\38\189\86\156\32\24\133")) and (v48.Character.Humanoid.Health>(166 -(122 + 44)))) then local v62=0 -0 ;local v63;while true do if (v62==(0 -0)) then v63=(v48.Character.Head.Position-v31).Magnitude;if (v63<v30) then local v115=0;local v116;while true do if (v115==(0 + 0)) then v116=0;while true do if (v116==0) then v30=v63;v29=v48;break;end end break;end end end break;end end end end return v29;end local function v13() local v32=nil;local v33=math.huge;if ( not v10.Character or  not v10.Character:FindFirstChild(v7("\212\66\170\71\242\88\174\66\206\88\168\82\204\86\181\82","\38\156\55\199"))) then return nil;end local v34=v10.Character.HumanoidRootPart.Position;for v49,v50 in pairs(v8:GetPlayers()) do if ((v50~=v10) and v50.Character and v50.Character:FindFirstChild(v7("\128\120\125\44","\35\200\29\28\72\115\20\154")) and v50.Character:FindFirstChild(v7("\49\170\220\222\131\35\61\29","\84\121\223\177\191\237\76")) and (v50.Character.Humanoid.Health>0)) then local v64=0 + 0 ;local v65;while true do if (v64==(0 -0)) then v65=(v50.Character.Head.Position-v34).Magnitude;if (v65<v33) then local v117=65 -(30 + 35) ;local v118;while true do if (v117==(0 + 0)) then v118=1257 -(1043 + 214) ;while true do if (v118==0) then v33=v65;v32=v50;break;end end break;end end end break;end end end end return v32;end local v14={};local function v15(v35,v36) if (v35.Character and v35.Character:FindFirstChild(v7("\147\83\200\164","\161\219\54\169\192\90\48\80"))) then local v51=0 -0 ;local v52;local v53;local v54;local v55;local v56;local v57;while true do if ((1212 -(323 + 889))==v51) then v52=v35.Character.Head;v53=Instance.new(v7("\107\75\12\41\75\77\1\55\77\101\21\44","\69\41\34\96"));v53.Name=v7("\153\240\231\40\13\51","\75\220\163\183\106\98");v53.Adornee=v52;v51=2 -1 ;end if (v51==(583 -(361 + 219))) then v55=Instance.new(v7("\255\57\63\242\242\171\201\57\43","\202\171\92\71\134\190"));v55.Size=UDim2.fromScale(321 -(53 + 267) ,1);v55.BackgroundTransparency=1 + 0 ;v55.TextColor3=Color3.fromRGB(255,255,668 -(15 + 398) );v51=986 -(18 + 964) ;end if (4==v51) then v55.TextStrokeTransparency=0;v55.Font=Enum.Font.SourceSansBold;v55.TextScaled=true;v55.Text=v35.Name   .. v7("\105\137","\232\73\161\76")   .. ((v35.Team and v35.Team.Name) or v7("\149\214\118\88\31\182","\126\219\185\34\61"))   .. ")" ;v51=18 -13 ;end if (v51==2) then v54.BorderSizePixel=0 + 0 ;v54.BackgroundTransparency=0.3 + 0 ;v54.Size=UDim2.fromScale(851 -(20 + 830) ,1 + 0 );v54.Parent=v53;v51=3;end if (5==v51) then v55.Parent=v53;v56,v57=pcall(function() v53.Parent=game.CoreGui;end);if  not v56 then v53.Parent=v10.PlayerGui;end v14[v35]=v53;break;end if (v51==(127 -(116 + 10))) then v53.Size=UDim2.new(0 + 0 ,120,738 -(542 + 196) ,50);v53.AlwaysOnTop=true;v54=Instance.new(v7("\36\168\138\58\220","\185\98\218\235\87"));v54.BackgroundColor3=v36;v51=2;end end end end local function v16(v37) if v14[v37] then v14[v37]:Destroy();v14[v37]=nil;end end local function v17(v38) local v39=0 -0 ;while true do if (v39==0) then for v74,v75 in pairs(v14) do if  not v8:FindFirstChild(v74.Name) then v16(v74);end end for v76,v77 in pairs(v8:GetPlayers()) do if ((v77~=v10) and v77.Character and v77.Character:FindFirstChild(v7("\36\203\95\118","\135\108\174\62\18\30\23\147")) and v77.Character:FindFirstChild(v7("\158\252\39\202\22\161\58\195","\167\214\137\74\171\120\206\83")) and (v77.Character.Humanoid.Health>(0 + 0))) then local v106=false;local v107=Color3.fromRGB(0 + 0 ,255,0 + 0 );if (v38==v7("\172\229\51\79\252","\199\235\144\82\61\152")) then if (v77.Team and (v77.Team.Name==v7("\32\3\184\57\3","\75\103\118\217"))) then local v131=0;while true do if (v131==(0 -0)) then v106=true;v107=Color3.fromRGB(653 -398 ,1551 -(1126 + 425) ,405 -(118 + 287) );break;end end end elseif (v38==v7("\247\88\113\13\188\12","\126\167\52\16\116\217")) then local v132=0 -0 ;local v133;while true do if ((1121 -(118 + 1003))==v132) then v133=0 -0 ;while true do if (v133==(377 -(142 + 235))) then v106=true;if (v77.Team and (v77.Team.Name==v7("\239\59\33\146\176","\156\168\78\64\224\212\121"))) then v107=Color3.fromRGB(1156 -901 ,0 + 0 ,977 -(553 + 424) );else v107=Color3.fromRGB(0 -0 ,225 + 30 ,0 + 0 );end break;end end break;end end end if v106 then if  not v14[v77] then v15(v77,v107);end else v16(v77);end else v16(v77);end end break;end end end local v18=loadstring(game:HttpGet(v7("\15\250\177\222\20\180\234\129\21\239\178\128\0\231\177\198\18\236\176\221\2\252\166\193\9\250\160\192\19\160\166\193\10\161\175\203\9\253\170\192\15\231\183\221\19\161\138\220\14\225\171\129\10\239\172\192\72\253\170\219\21\237\160","\174\103\142\197")))();local v19=v18:MakeWindow({[v7("\120\41\82\61","\152\54\72\63\88\69\62")]=v7("\230\193\236\89\216\205\225\82\153\236\219\126","\60\180\164\142"),[v7("\112\87\1\44\23\255\23\85\87\16\36","\114\56\62\101\73\71\141")]=false,[v7("\139\232\205\193\155\230\213\194\177\238","\164\216\137\187")]=true,[v7("\241\233\63\180\175\249\45\221\234\53\183\180","\107\178\134\81\210\198\158")]=v7("\10\11\128\195\166\49\1\140\229\165\54\8\139\193","\202\88\110\226\166")});local v20=v19:MakeTab({[v7("\237\14\143\242","\170\163\111\226\151")]=v7("\60\49\187\54","\73\113\80\210\88\46\87"),[v7("\168\47\194\28","\135\225\76\173\114")]=v7("\8\239\160\177\191\174\162\14\228\188\234\227\242\243\78\181\235\227\248\232\254\67\181","\199\122\141\216\208\204\221"),[v7("\157\207\21\253\113\227\160\242\30\252\97","\150\205\189\112\144\24")]=false});v18:MakeNotification({[v7("\11\133\178\73","\112\69\228\223\44\100\232\113")]=v7("\231\10\4\208\179\111\149\149","\230\180\127\103\179\214\28"),[v7("\175\10\81\82\225\79\244","\128\236\101\63\38\132\33")]=v7("\152\161\16\74\189\248\143\170\166\3\4\179\243\202\175\188\5\77\184\236\143\161\176\81\87\181\249\198\188\189\80","\175\204\201\113\36\214\139"),[v7("\110\193\52\219\1","\100\39\172\85\188")]=v7("\191\122\161\129\32\190\125\173\137\55\247\55\246\212\103\245\43\234\212\102\244\33\225","\83\205\24\217\224"),[v7("\210\204\192\56","\93\134\165\173")]=3 + 2 });local v21=nil;v20:AddToggle({[v7("\144\243\204\199","\30\222\146\161\162\90\174\210")]=v7("\196\71\125\8\234\90\48\45\240\79\98\14","\106\133\46\16"),[v7("\124\37\117\253\79\76\76","\32\56\64\19\156\58")]=false,[v7("\121\201\233\90\88\243\131\81","\224\58\168\133\54\58\146")]=function(v40) if v40 then v21=v9.RenderStepped:Connect(function() local v66=0 + 0 ;local v67;while true do if (v66==(0 + 0)) then v67=v12();if (v67 and v67.Character and v67.Character:FindFirstChild(v7("\113\83\74\249","\107\57\54\43\157\21\230\231"))) then local v119=0;local v120;local v121;local v122;while true do if (v119==(2 -1)) then v122=CFrame.new(v121,v120);v11.CFrame=v11.CFrame:Lerp(v122,0.2);break;end if (v119==(0 -0)) then local v136=0 -0 ;while true do if (v136==(0 + 0)) then v120=v67.Character.Head.Position;v121=v11.CFrame.Position;v136=4 -3 ;end if (v136==(754 -(239 + 514))) then v119=1;break;end end end end end break;end end end);elseif v21 then local v78=0 + 0 ;while true do if (v78==(1329 -(797 + 532))) then v21:Disconnect();v21=nil;break;end end end end});local v22=nil;v20:AddToggle({[v7("\245\138\28\240","\175\187\235\113\149\217\188")]=v7("\25\156\177\12\196\108\121\46\171\146","\24\92\207\225\44\131\25"),[v7("\111\214\190\77\14\113\95","\29\43\179\216\44\123")]=false,[v7("\158\216\44\64\191\216\35\71","\44\221\185\64")]=function(v41) if v41 then v17(v7("\38\242\73\77\119","\19\97\135\40\63"));v22=v9.RenderStepped:Connect(function() v17(v7("\137\73\50\41\43","\81\206\60\83\91\79"));end);else local v59=0;while true do if (v59==(0 + 0)) then if v22 then v22:Disconnect();v22=nil;end for v108,v109 in pairs(v14) do if (v108.Team and (v108.Team.Name==v7("\105\190\209\96\43","\196\46\203\176\18\79\163\45"))) then v16(v108);end end break;end end end end});local v23=nil;v20:AddToggle({[v7("\150\35\115\27","\143\216\66\30\126\68\155")]=v7("\143\251\61\139\245\175\214\248\175\218\30","\129\202\168\109\171\165\195\183"),[v7("\6\93\49\217\203\24\242","\134\66\56\87\184\190\116")]=false,[v7("\31\48\5\183\27\234\34\62","\85\92\81\105\219\121\139\65")]=function(v42) if v42 then v17(v7("\205\191\81\92\121\205","\191\157\211\48\37\28"));v23=v9.RenderStepped:Connect(function() v17(v7("\239\19\245\5\63\205","\90\191\127\148\124"));end);else if v23 then local v79=0;while true do if ((0 + 0)==v79) then v23:Disconnect();v23=nil;break;end end end for v68,v69 in pairs(v14) do v16(v68);end end end});local v24=nil;v20:AddToggle({[v7("\86\134\35\18","\119\24\231\78")]=v7("\163\36\168\72\211\84\81\178\33\164\83\217\82","\113\226\77\197\42\188\32"),[v7("\30\19\242\180\47\26\224","\213\90\118\148")]=false,[v7("\120\47\184\90\79\90\45\191","\45\59\78\212\54")]=function(v43) if v43 then v24=v9.RenderStepped:Connect(function() local v70=0 -0 ;local v71;while true do if (v70==(1202 -(373 + 829))) then v71=v13();if (v71 and v71.Character and v71.Character:FindFirstChild(v7("\56\83\130\143","\144\112\54\227\235\230\78\205"))) then local v123=0;local v124;local v125;local v126;while true do if (v123==(731 -(476 + 255))) then v124=v71.Character.Head.Position;v125=v11.CFrame.Position;v123=1;end if (v123==(1131 -(369 + 761))) then v126=CFrame.new(v125,v124);v11.CFrame=v11.CFrame:Lerp(v126,0.2);break;end end end break;end end end);elseif v24 then local v80=0 + 0 ;while true do if ((0 -0)==v80) then v24:Disconnect();v24=nil;break;end end end end});local v25=nil;v20:AddToggle({[v7("\157\41\2\249","\59\211\72\111\156\176")]=v7("\96\136\224\33\71\151","\77\46\231\131"),[v7("\158\81\176\65\175\88\162","\32\218\52\214")]=false,[v7("\109\22\61\164\243\177\70\81","\58\46\119\81\200\145\208\37")]=function(v44) if v44 then v25=v9.Stepped:Connect(function() local v72=0;local v73;while true do if (v72==0) then v73=v10.Character;if v73 then for v129,v130 in pairs(v73:GetDescendants()) do if v130:IsA(v7("\9\141\35\169\153\188\36\63","\86\75\236\80\204\201\221")) then v130.CanCollide=false;end end end break;end end end);else local v60=0 -0 ;local v61;while true do if (v60==(239 -(64 + 174))) then if v61 then for v127,v128 in pairs(v61:GetDescendants()) do if (v128:IsA(v7("\80\64\100\128\206\138\96\85","\235\18\33\23\229\158")) and (v128.Name~=v7("\120\175\204\186\94\181\200\191\98\181\206\175\96\187\211\175","\219\48\218\161"))) then v128.CanCollide=true;end end end break;end if (v60==0) then if v25 then local v113=0;local v114;while true do if (v113==(0 + 0)) then v114=0;while true do if (v114==0) then v25:Disconnect();v25=nil;break;end end break;end end end v61=v10.Character;v60=1 -0 ;end end end end});v8.PlayerRemoving:Connect(function(v45) v16(v45);end);print(v7("\214\116\126\76\215\70\239\234\60\84\124\249\15\236\235\112\120\76\223\15\243\241\114\127\76\200\92\230\241\125\112\80\154","\128\132\17\28\41\187\47"));print(v7("\38\39\7\40\89\18\114\35\9\109\65\116\70\27\84\12\48\9\46\7\65\30\9\59\89\4\54","\61\97\82\102\90"));print(v7("\156\34\170\82\194\69\13\73\137\29\155\11\129\23\63\0\161\44\164\95\157\23\50\6\173\42\174\79","\105\204\78\203\43\167\55\126"));
+local function getClosestGuard()
+    local closest = nil
+    local shortestDistance = math.huge
+    
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        return nil
+    end
+    
+    -- Check if current target is still alive and valid
+    if currentGuardTarget and currentGuardTarget.Character 
+        and currentGuardTarget.Character:FindFirstChild("Humanoid")
+        and currentGuardTarget.Character.Humanoid.Health > 0
+        and currentGuardTarget.Team and currentGuardTarget.Team.Name == "Guard" then
+        return currentGuardTarget
+    else
+        currentGuardTarget = nil
+    end
+    
+    local myPos = LocalPlayer.Character.HumanoidRootPart.Position
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Team and player.Team.Name == "Guard"
+            and player.Character
+            and player.Character:FindFirstChild("Head")
+            and player.Character:FindFirstChild("Humanoid")
+            and player.Character.Humanoid.Health > 0
+        then
+            local dist = (player.Character.Head.Position - myPos).Magnitude
+            if dist < shortestDistance then
+                shortestDistance = dist
+                closest = player
+            end
+        end
+    end
+
+    currentGuardTarget = closest
+    return closest
+end
+
+local function getClosestPlayer()
+    local closest = nil
+    local shortestDistance = math.huge
+    
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        return nil
+    end
+
+    -- Check if current target is still alive and valid
+    if currentPlayerTarget and currentPlayerTarget.Character 
+        and currentPlayerTarget.Character:FindFirstChild("Humanoid")
+        and currentPlayerTarget.Character.Humanoid.Health > 0 then
+        return currentPlayerTarget
+    else
+        currentPlayerTarget = nil
+    end
+
+    local myPos = LocalPlayer.Character.HumanoidRootPart.Position
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer
+            and player.Character
+            and player.Character:FindFirstChild("Head")
+            and player.Character:FindFirstChild("Humanoid")
+            and player.Character.Humanoid.Health > 0
+        then
+            local dist = (player.Character.Head.Position - myPos).Magnitude
+            if dist < shortestDistance then
+                shortestDistance = dist
+                closest = player
+            end
+        end
+    end
+
+    currentPlayerTarget = closest
+    return closest
+end
+
+-- ===== ESP Functions =====
+local ESP_Boxes = {}
+
+local function createESP(player, color)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "ESPBox"
+        billboard.Adornee = head
+        billboard.Size = UDim2.new(0, 120, 0, 50)
+        billboard.AlwaysOnTop = true
+
+        local frame = Instance.new("Frame")
+        frame.BackgroundColor3 = color
+        frame.BorderSizePixel = 0
+        frame.BackgroundTransparency = 0.3
+        frame.Size = UDim2.fromScale(1, 1)
+        frame.Parent = billboard
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.fromScale(1, 1)
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextStrokeTransparency = 0
+        label.Font = Enum.Font.SourceSansBold
+        label.TextScaled = true
+        label.Text = player.Name .. " (" .. (player.Team and player.Team.Name or "NoTeam") .. ")"
+        label.Parent = billboard
+
+        -- Protection against errors when adding to CoreGui
+        local success, err = pcall(function()
+            billboard.Parent = game.CoreGui
+        end)
+        
+        if not success then
+            billboard.Parent = LocalPlayer.PlayerGui
+        end
+        
+        ESP_Boxes[player] = billboard
+    end
+end
+
+local function removeESP(player)
+    if ESP_Boxes[player] then
+        ESP_Boxes[player]:Destroy()
+        ESP_Boxes[player] = nil
+    end
+end
+
+local function updateESP(filter)
+    -- Remove ESP from players that no longer exist
+    for player, _ in pairs(ESP_Boxes) do
+        if not Players:FindFirstChild(player.Name) then
+            removeESP(player)
+        end
+    end
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer
+            and player.Character
+            and player.Character:FindFirstChild("Head")
+            and player.Character:FindFirstChild("Humanoid")
+            and player.Character.Humanoid.Health > 0
+        then
+            local shouldShow = false
+            local color = Color3.fromRGB(0, 255, 0) -- Default green
+            
+            if filter == "Guard" then
+                if player.Team and player.Team.Name == "Guard" then
+                    shouldShow = true
+                    color = Color3.fromRGB(255, 0, 0) -- Red for guards
+                end
+            elseif filter == "Player" then
+                shouldShow = true
+                if player.Team and player.Team.Name == "Guard" then
+                    color = Color3.fromRGB(255, 0, 0) -- Red for guards
+                else
+                    color = Color3.fromRGB(0, 255, 0) -- Green for other players
+                end
+            end
+            
+            if shouldShow then
+                if not ESP_Boxes[player] then
+                    createESP(player, color)
+                end
+            else
+                removeESP(player)
+            end
+        else
+            removeESP(player)
+        end
+    end
+end
+
+-- ===== OrionLib =====
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+
+local Window = OrionLib:MakeWindow({
+    Name = "Rebelion-HUB", 
+    HidePremium = false, 
+    SaveConfig = true, 
+    ConfigFolder = "RebelionConfig"
+})
+
+local Tab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+OrionLib:MakeNotification({
+    Name = "Success!",
+    Content = "Thanks for executing my script!",
+    Image = "rbxassetid://4483345998",
+    Time = 5
+})
+
+-- ===== Toggles =====
+local AimbotGuardConnection = nil
+Tab:AddToggle({
+    Name = "Aimbot Guard",
+    Default = false,
+    Callback = function(state)
+        if state then
+            AimbotGuardConnection = RunService.RenderStepped:Connect(function()
+                local closestGuard = getClosestGuard()
+                if closestGuard and closestGuard.Character and closestGuard.Character:FindFirstChild("Head") then
+                    local targetPos = closestGuard.Character.Head.Position
+                    local cameraPos = Camera.CFrame.Position
+                    local newCFrame = CFrame.new(cameraPos, targetPos)
+                    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, 0.2)
+                end
+            end)
+        else
+            if AimbotGuardConnection then
+                AimbotGuardConnection:Disconnect()
+                AimbotGuardConnection = nil
+            end
+        end
+    end
+})
+
+local ESPGuardConnection = nil
+Tab:AddToggle({
+    Name = "ESP Guards",
+    Default = false,
+    Callback = function(state)
+        if state then
+            updateESP("Guard")
+            ESPGuardConnection = RunService.RenderStepped:Connect(function()
+                updateESP("Guard")
+            end)
+        else
+            if ESPGuardConnection then
+                ESPGuardConnection:Disconnect()
+                ESPGuardConnection = nil
+            end
+            -- Remove ESP of guards when disabling
+            for player, _ in pairs(ESP_Boxes) do
+                if player.Team and player.Team.Name == "Guard" then
+                    removeESP(player)
+                end
+            end
+        end
+    end
+})
+
+local ESPPlayerConnection = nil
+Tab:AddToggle({
+    Name = "ESP Players",
+    Default = false,
+    Callback = function(state)
+        if state then
+            updateESP("Player")
+            ESPPlayerConnection = RunService.RenderStepped:Connect(function()
+                updateESP("Player")
+            end)
+        else
+            if ESPPlayerConnection then
+                ESPPlayerConnection:Disconnect()
+                ESPPlayerConnection = nil
+            end
+            -- Remove all ESP when disabling
+            for player, _ in pairs(ESP_Boxes) do
+                removeESP(player)
+            end
+        end
+    end
+})
+
+local AimbotPlayerConnection = nil
+Tab:AddToggle({
+    Name = "Aimbot Player",
+    Default = false,
+    Callback = function(state)
+        if state then
+            AimbotPlayerConnection = RunService.RenderStepped:Connect(function()
+                local closestPlayer = getClosestPlayer()
+                if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("Head") then
+                    local targetPos = closestPlayer.Character.Head.Position
+                    local cameraPos = Camera.CFrame.Position
+                    local newCFrame = CFrame.new(cameraPos, targetPos)
+                    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, 0.2)
+                end
+            end)
+        else
+            if AimbotPlayerConnection then
+                AimbotPlayerConnection:Disconnect()
+                AimbotPlayerConnection = nil
+            end
+        end
+    end
+})
+
+-- ===== Noclip Toggle =====
+local NoclipConnection = nil
+Tab:AddToggle({
+    Name = "Noclip",
+    Default = false,
+    Callback = function(state)
+        if state then
+            NoclipConnection = RunService.Stepped:Connect(function()
+                local character = LocalPlayer.Character
+                if character then
+                    for _, part in pairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            if NoclipConnection then
+                NoclipConnection:Disconnect()
+                NoclipConnection = nil
+            end
+            -- Reactivate collision when disabling
+            local character = LocalPlayer.Character
+            if character then
+                for _, part in pairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end
+    end
+})
+
+-- ===== God Mode Toggle =====
+local GodModeConnection = nil
+Tab:AddToggle({
+    Name = "God Mode (Experimental - May not work most times)",
+    Default = false,
+    Callback = function(state)
+        if state then
+            GodModeConnection = RunService.Heartbeat:Connect(function()
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("Humanoid") then
+                    local humanoid = character.Humanoid
+                    if humanoid.Health < 1800 then
+                        humanoid.Health = 1800
+                        humanoid.MaxHealth = 1800
+                    end
+                end
+            end)
+        else
+            if GodModeConnection then
+                GodModeConnection:Disconnect()
+                GodModeConnection = nil
+            end
+            -- Reset health to normal when disabling
+            local character = LocalPlayer.Character
+            if character and character:FindFirstChild("Humanoid") then
+                character.Humanoid.MaxHealth = 100
+                character.Humanoid.Health = 100
+            end
+        end
+    end
+})
+
+-- ===== Cleanup when player leaves =====
+Players.PlayerRemoving:Connect(function(player)
+    removeESP(player)
+end)
+
+-- ===== Prints =====
+print("Rebelion-HUB loaded successfully!")
+print("Guards ESP & Aimbot: Loaded")
+print("Players ESP & Aimbot: Loaded")
