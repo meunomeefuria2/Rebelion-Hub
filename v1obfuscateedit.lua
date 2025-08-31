@@ -4,8 +4,7 @@ local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
 -- ===== Functions to get closest player =====
-local currentGuardTarget = nil
-local currentPlayerTarget = nil
+local AIMBOT_MAX_DISTANCE = 150 -- Maximum distance for aimbot to activate
 
 local function getClosestGuard()
     local closest = nil
@@ -13,16 +12,6 @@ local function getClosestGuard()
     
     if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         return nil
-    end
-    
-    -- Check if current target is still alive and valid
-    if currentGuardTarget and currentGuardTarget.Character 
-        and currentGuardTarget.Character:FindFirstChild("Humanoid")
-        and currentGuardTarget.Character.Humanoid.Health > 0
-        and currentGuardTarget.Team and currentGuardTarget.Team.Name == "Guard" then
-        return currentGuardTarget
-    else
-        currentGuardTarget = nil
     end
     
     local myPos = LocalPlayer.Character.HumanoidRootPart.Position
@@ -35,14 +24,13 @@ local function getClosestGuard()
             and player.Character.Humanoid.Health > 0
         then
             local dist = (player.Character.Head.Position - myPos).Magnitude
-            if dist < shortestDistance then
+            if dist < shortestDistance and dist <= AIMBOT_MAX_DISTANCE then
                 shortestDistance = dist
                 closest = player
             end
         end
     end
 
-    currentGuardTarget = closest
     return closest
 end
 
@@ -52,15 +40,6 @@ local function getClosestPlayer()
     
     if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         return nil
-    end
-
-    -- Check if current target is still alive and valid
-    if currentPlayerTarget and currentPlayerTarget.Character 
-        and currentPlayerTarget.Character:FindFirstChild("Humanoid")
-        and currentPlayerTarget.Character.Humanoid.Health > 0 then
-        return currentPlayerTarget
-    else
-        currentPlayerTarget = nil
     end
 
     local myPos = LocalPlayer.Character.HumanoidRootPart.Position
@@ -73,14 +52,41 @@ local function getClosestPlayer()
             and player.Character.Humanoid.Health > 0
         then
             local dist = (player.Character.Head.Position - myPos).Magnitude
-            if dist < shortestDistance then
+            if dist < shortestDistance and dist <= AIMBOT_MAX_DISTANCE then
                 shortestDistance = dist
                 closest = player
             end
         end
     end
 
-    currentPlayerTarget = closest
+    return closest
+end
+
+local function getClosestFrontman()
+    local closest = nil
+    local shortestDistance = math.huge
+    
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        return nil
+    end
+    
+    local myPos = LocalPlayer.Character.HumanoidRootPart.Position
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Team and player.Team.Name == "Front man"
+            and player.Character
+            and player.Character:FindFirstChild("Head")
+            and player.Character:FindFirstChild("Humanoid")
+            and player.Character.Humanoid.Health > 0
+        then
+            local dist = (player.Character.Head.Position - myPos).Magnitude
+            if dist < shortestDistance and dist <= AIMBOT_MAX_DISTANCE then
+                shortestDistance = dist
+                closest = player
+            end
+        end
+    end
+
     return closest
 end
 
@@ -157,10 +163,17 @@ local function updateESP(filter)
                     shouldShow = true
                     color = Color3.fromRGB(255, 0, 0) -- Red for guards
                 end
+            elseif filter == "Frontman" then
+                if player.Team and player.Team.Name == "Front man" then
+                    shouldShow = true
+                    color = Color3.fromRGB(255, 165, 0) -- Orange for Front man
+                end
             elseif filter == "Player" then
                 shouldShow = true
                 if player.Team and player.Team.Name == "Guard" then
                     color = Color3.fromRGB(255, 0, 0) -- Red for guards
+                elseif player.Team and player.Team.Name == "Front man" then
+                    color = Color3.fromRGB(255, 165, 0) -- Orange for Front man
                 else
                     color = Color3.fromRGB(0, 255, 0) -- Green for other players
                 end
@@ -203,6 +216,8 @@ OrionLib:MakeNotification({
 })
 
 -- ===== Toggles =====
+
+-- AIMBOT TOGGLES
 local AimbotGuardConnection = nil
 Tab:AddToggle({
     Name = "Aimbot Guard",
@@ -227,6 +242,55 @@ Tab:AddToggle({
     end
 })
 
+local AimbotPlayerConnection = nil
+Tab:AddToggle({
+    Name = "Aimbot Player",
+    Default = false,
+    Callback = function(state)
+        if state then
+            AimbotPlayerConnection = RunService.RenderStepped:Connect(function()
+                local closestPlayer = getClosestPlayer()
+                if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("Head") then
+                    local targetPos = closestPlayer.Character.Head.Position
+                    local cameraPos = Camera.CFrame.Position
+                    local newCFrame = CFrame.new(cameraPos, targetPos)
+                    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, 0.2)
+                end
+            end)
+        else
+            if AimbotPlayerConnection then
+                AimbotPlayerConnection:Disconnect()
+                AimbotPlayerConnection = nil
+            end
+        end
+    end
+})
+
+local AimbotFrontmanConnection = nil
+Tab:AddToggle({
+    Name = "Aimbot Front man",
+    Default = false,
+    Callback = function(state)
+        if state then
+            AimbotFrontmanConnection = RunService.RenderStepped:Connect(function()
+                local closestFrontman = getClosestFrontman()
+                if closestFrontman and closestFrontman.Character and closestFrontman.Character:FindFirstChild("Head") then
+                    local targetPos = closestFrontman.Character.Head.Position
+                    local cameraPos = Camera.CFrame.Position
+                    local newCFrame = CFrame.new(cameraPos, targetPos)
+                    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, 0.2)
+                end
+            end)
+        else
+            if AimbotFrontmanConnection then
+                AimbotFrontmanConnection:Disconnect()
+                AimbotFrontmanConnection = nil
+            end
+        end
+    end
+})
+
+-- ESP TOGGLES
 local ESPGuardConnection = nil
 Tab:AddToggle({
     Name = "ESP Guards",
@@ -275,25 +339,26 @@ Tab:AddToggle({
     end
 })
 
-local AimbotPlayerConnection = nil
+local ESPFrontmanConnection = nil
 Tab:AddToggle({
-    Name = "Aimbot Player",
+    Name = "ESP Front man",
     Default = false,
     Callback = function(state)
         if state then
-            AimbotPlayerConnection = RunService.RenderStepped:Connect(function()
-                local closestPlayer = getClosestPlayer()
-                if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("Head") then
-                    local targetPos = closestPlayer.Character.Head.Position
-                    local cameraPos = Camera.CFrame.Position
-                    local newCFrame = CFrame.new(cameraPos, targetPos)
-                    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, 0.2)
-                end
+            updateESP("Frontman")
+            ESPFrontmanConnection = RunService.RenderStepped:Connect(function()
+                updateESP("Frontman")
             end)
         else
-            if AimbotPlayerConnection then
-                AimbotPlayerConnection:Disconnect()
-                AimbotPlayerConnection = nil
+            if ESPFrontmanConnection then
+                ESPFrontmanConnection:Disconnect()
+                ESPFrontmanConnection = nil
+            end
+            -- Remove ESP of Front man when disabling
+            for player, _ in pairs(ESP_Boxes) do
+                if player.Team and player.Team.Name == "Front man" then
+                    removeESP(player)
+                end
             end
         end
     end
@@ -366,12 +431,137 @@ Tab:AddToggle({
     end
 })
 
+-- ===== Hitbox Expander Toggle =====
+local HitboxConnection = nil
+local originalSizes = {}
+
+Tab:AddToggle({
+    Name = "Expand Hitboxes (Enemy Players)",
+    Default = false,
+    Callback = function(state)
+        if state then
+            HitboxConnection = RunService.Heartbeat:Connect(function()
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        local hrp = player.Character.HumanoidRootPart
+                        -- Store original size if not stored yet
+                        if not originalSizes[hrp] then
+                            originalSizes[hrp] = hrp.Size
+                        end
+                        -- Expand HumanoidRootPart hitbox significantly
+                        hrp.Size = Vector3.new(8, 8, 8)
+                        hrp.Transparency = 0 -- Keep it invisible like normal
+                        hrp.CanCollide = false
+                    end
+                end
+            end)
+        else
+            if HitboxConnection then
+                HitboxConnection:Disconnect()
+                HitboxConnection = nil
+            end
+            -- Restore original hitboxes
+            for hrp, originalSize in pairs(originalSizes) do
+                if hrp and hrp.Parent then
+                    hrp.Size = originalSize
+                    hrp.Transparency = 1 -- Back to invisible
+                    hrp.CanCollide = false -- HumanoidRootPart should never collide
+                end
+            end
+            originalSizes = {}
+        end
+    end
+})
+
+-- ===== Fling Toggle =====
+local FlingConnection = nil
+local FlingForce = 50000 -- Adjust this value for more/less fling power
+
+Tab:AddToggle({
+    Name = "Fling Players (Touch to Launch)",
+    Default = false,
+    Callback = function(state)
+        if state then
+            FlingConnection = RunService.Heartbeat:Connect(function()
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    local myHRP = character.HumanoidRootPart
+                    
+                    for _, player in pairs(Players:GetPlayers()) do
+                        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                            local theirHRP = player.Character.HumanoidRootPart
+                            local distance = (myHRP.Position - theirHRP.Position).Magnitude
+                            
+                            -- If close enough to touch
+                            if distance <= 8 then
+                                -- Create fling force
+                                local bodyVelocity = theirHRP:FindFirstChild("FlingForce")
+                                if not bodyVelocity then
+                                    bodyVelocity = Instance.new("BodyVelocity")
+                                    bodyVelocity.Name = "FlingForce"
+                                    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                                    bodyVelocity.Parent = theirHRP
+                                end
+                                
+                                -- Calculate fling direction (up and away from you)
+                                local direction = (theirHRP.Position - myHRP.Position).Unit
+                                direction = direction + Vector3.new(0, 1, 0) -- Add upward force
+                                bodyVelocity.Velocity = direction * FlingForce
+                                
+                                -- Remove the force after a short time
+                                game:GetService("Debris"):AddItem(bodyVelocity, 0.5)
+                            end
+                        end
+                    end
+                end
+            end)
+        else
+            if FlingConnection then
+                FlingConnection:Disconnect()
+                FlingConnection = nil
+            end
+            -- Remove any remaining fling forces
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local flingForce = player.Character.HumanoidRootPart:FindFirstChild("FlingForce")
+                    if flingForce then
+                        flingForce:Destroy()
+                    end
+                end
+            end
+        end
+    end
+})
+
 -- ===== Cleanup when player leaves =====
 Players.PlayerRemoving:Connect(function(player)
     removeESP(player)
+    -- Clean up hitbox data for disconnected players
+    for part, _ in pairs(originalSizes) do
+        if part and part.Parent and part.Parent.Parent == player then
+            originalSizes[part] = nil
+        end
+    end
 end)
 
 -- ===== Prints =====
 print("Rebelion-HUB loaded successfully!")
 print("Guards ESP & Aimbot: Loaded")
-print("Players ESP & Aimbot: Loaded")
+print("Players ESP & Aimbot: Loaded") 
+print("Front man ESP & Aimbot: Loaded")
+print("Hitbox Expander: Ready")
+print("Fling System: Ready")
+
+-- Debug function to check teams
+spawn(function()
+    wait(3)
+    print("=== TEAM DEBUG ===")
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Team then
+            print(player.Name .. " is on team: " .. player.Team.Name)
+        else
+            print(player.Name .. " has no team")
+        end
+    end
+    print("=== END DEBUG ===")
+end)
