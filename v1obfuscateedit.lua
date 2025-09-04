@@ -3,8 +3,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
--- ===== Functions to get closest player =====
-local AIMBOT_MAX_DISTANCE = 150 -- Maximum distance for aimbot to activate
+local AIMBOT_MAX_DISTANCE = 150 
 
 local function getClosestGuard()
     local closest = nil
@@ -74,7 +73,6 @@ local function getClosestFrontman()
     local myPos = LocalPlayer.Character.HumanoidRootPart.Position
 
     for _, player in pairs(Players:GetPlayers()) do
-        -- Always check current team status
         if player.Team and player.Team.Name == "Front man"
             and player.Character
             and player.Character:FindFirstChild("Head")
@@ -92,7 +90,6 @@ local function getClosestFrontman()
     return closest
 end
 
--- ===== ESP Functions =====
 local ESP_Boxes = {}
 
 local function createESP(player, color)
@@ -124,7 +121,6 @@ local function createESP(player, color)
         label.Text = player.Name .. " (" .. currentTeamName .. ")"
         label.Parent = billboard
 
-        -- Protection against errors when adding to CoreGui
         local success, err = pcall(function()
             billboard.Parent = game.CoreGui
         end)
@@ -145,14 +141,12 @@ local function removeESP(player)
 end
 
 local function updateESP(filter)
-    -- Remove ESP from players that no longer exist
     for player, _ in pairs(ESP_Boxes) do
         if not Players:FindFirstChild(player.Name) then
             removeESP(player)
         end
     end
     
-    -- First, remove all existing ESP to refresh
     for player, _ in pairs(ESP_Boxes) do
         removeESP(player)
     end
@@ -165,26 +159,26 @@ local function updateESP(filter)
             and player.Character.Humanoid.Health > 0
         then
             local shouldShow = false
-            local color = Color3.fromRGB(0, 255, 0) -- Default green
+            local color = Color3.fromRGB(0, 255, 0)
             
             if filter == "Guard" then
                 if player.Team and player.Team.Name == "Guard" then
                     shouldShow = true
-                    color = Color3.fromRGB(255, 0, 0) -- Red for guards
+                    color = Color3.fromRGB(255, 0, 0)
                 end
             elseif filter == "Frontman" then
                 if player.Team and player.Team.Name == "Front man" then
                     shouldShow = true
-                    color = Color3.fromRGB(255, 165, 0) -- Orange for Front man
+                    color = Color3.fromRGB(255, 165, 0) 
                 end
             elseif filter == "Player" then
                 shouldShow = true
                 if player.Team and player.Team.Name == "Guard" then
-                    color = Color3.fromRGB(255, 0, 0) -- Red for guards
+                    color = Color3.fromRGB(255, 0, 0) 
                 elseif player.Team and player.Team.Name == "Front man" then
-                    color = Color3.fromRGB(255, 165, 0) -- Orange for Front man
+                    color = Color3.fromRGB(255, 165, 0) 
                 else
-                    color = Color3.fromRGB(0, 255, 0) -- Green for other players
+                    color = Color3.fromRGB(0, 255, 0) 
                 end
             end
             
@@ -195,7 +189,6 @@ local function updateESP(filter)
     end
 end
 
--- ===== OrionLib =====
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
 local Window = OrionLib:MakeWindow({
@@ -218,9 +211,6 @@ OrionLib:MakeNotification({
     Time = 5
 })
 
--- ===== Toggles =====
-
--- AIMBOT TOGGLES
 local AimbotGuardConnection = nil
 Tab:AddToggle({
     Name = "Aimbot Guard",
@@ -293,7 +283,6 @@ Tab:AddToggle({
     end
 })
 
--- ESP TOGGLES
 local ESPGuardConnection = nil
 Tab:AddToggle({
     Name = "ESP Guards",
@@ -308,9 +297,9 @@ Tab:AddToggle({
             if ESPGuardConnection then
                 ESPGuardConnection:Disconnect()
                 ESPGuardConnection = nil
-            end
-            -- Remove ESP of guards when disabling
-            for player, _ in pairs(ESP_Boxes) do
+             end
+                
+             for player, _ in pairs(ESP_Boxes) do
                 if player.Team and player.Team.Name == "Guard" then
                     removeESP(player)
                 end
@@ -334,7 +323,7 @@ Tab:AddToggle({
                 ESPPlayerConnection:Disconnect()
                 ESPPlayerConnection = nil
             end
-            -- Remove all ESP when disabling
+            
             for player, _ in pairs(ESP_Boxes) do
                 removeESP(player)
             end
@@ -357,7 +346,7 @@ Tab:AddToggle({
                 ESPFrontmanConnection:Disconnect()
                 ESPFrontmanConnection = nil
             end
-            -- Remove ESP of Front man when disabling
+                
             for player, _ in pairs(ESP_Boxes) do
                 if player.Team and player.Team.Name == "Front man" then
                     removeESP(player)
@@ -367,7 +356,6 @@ Tab:AddToggle({
     end
 })
 
--- ===== Noclip Toggle =====
 local NoclipConnection = nil
 Tab:AddToggle({
     Name = "Noclip",
@@ -389,7 +377,7 @@ Tab:AddToggle({
                 NoclipConnection:Disconnect()
                 NoclipConnection = nil
             end
-            -- Reactivate collision when disabling
+                
             local character = LocalPlayer.Character
             if character then
                 for _, part in pairs(character:GetDescendants()) do
@@ -402,7 +390,6 @@ Tab:AddToggle({
     end
 })
 
--- ===== God Mode Toggle =====
 local GodModeConnection = nil
 Tab:AddToggle({
     Name = "God Mode (Experimental - May not work most times)",
@@ -414,33 +401,27 @@ Tab:AddToggle({
                 if character and character:FindFirstChild("Humanoid") then
                     local humanoid = character.Humanoid
                     
-                    -- Method 1: Keep health at max
                     humanoid.MaxHealth = math.huge
                     humanoid.Health = math.huge
                     
-                    -- Method 2: Prevent death
                     if humanoid.Health <= 0 then
                         humanoid.Health = math.huge
                     end
                     
-                    -- Method 3: Remove damage-dealing objects
                     for _, obj in pairs(character:GetDescendants()) do
                         if obj:IsA("Fire") or obj:IsA("Smoke") then
                             obj:Destroy()
                         end
                     end
-                    
-                    -- Method 4: Prevent specific damage types
+
                     humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
                     humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
                     humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
                 end
-                
-                -- Method 5: Character-level protection
+
                 if LocalPlayer.Character then
                     LocalPlayer.Character:SetAttribute("Invincible", true)
-                    
-                    -- Prevent character deletion
+
                     for _, part in pairs(LocalPlayer.Character:GetChildren()) do
                         if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
                             part:SetAttribute("Protected", true)
@@ -448,11 +429,10 @@ Tab:AddToggle({
                     end
                 end
             end)
-            
-            -- Additional protection when character spawns
+
             local function protectNewCharacter(character)
                 if character then
-                    wait(1) -- Wait for character to fully load
+                    wait(1)
                     local humanoid = character:WaitForChild("Humanoid", 5)
                     if humanoid then
                         humanoid.MaxHealth = math.huge
@@ -461,8 +441,7 @@ Tab:AddToggle({
                     end
                 end
             end
-            
-            -- Connect to character spawning
+
             if LocalPlayer.Character then
                 protectNewCharacter(LocalPlayer.Character)
             end
@@ -473,8 +452,7 @@ Tab:AddToggle({
                 GodModeConnection:Disconnect()
                 GodModeConnection = nil
             end
-            
-            -- Reset to normal when disabling
+
             local character = LocalPlayer.Character
             if character and character:FindFirstChild("Humanoid") then
                 local humanoid = character.Humanoid
@@ -497,7 +475,6 @@ Tab:AddToggle({
     end
 })
 
--- ===== Hitbox Expander Toggle =====
 local HitboxConnection = nil
 local originalSizes = {}
 
@@ -510,13 +487,13 @@ Tab:AddToggle({
                 for _, player in pairs(Players:GetPlayers()) do
                     if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                         local hrp = player.Character.HumanoidRootPart
-                        -- Store original size if not stored yet
+
                         if not originalSizes[hrp] then
                             originalSizes[hrp] = hrp.Size
                         end
-                        -- Expand HumanoidRootPart hitbox significantly
+                                
                         hrp.Size = Vector3.new(8, 8, 8)
-                        hrp.Transparency = 0 -- Keep it invisible like normal
+                        hrp.Transparency = 0 
                         hrp.CanCollide = false
                     end
                 end
@@ -526,12 +503,12 @@ Tab:AddToggle({
                 HitboxConnection:Disconnect()
                 HitboxConnection = nil
             end
-            -- Restore original hitboxes
+            
             for hrp, originalSize in pairs(originalSizes) do
                 if hrp and hrp.Parent then
                     hrp.Size = originalSize
-                    hrp.Transparency = 1 -- Back to invisible
-                    hrp.CanCollide = false -- HumanoidRootPart should never collide
+                    hrp.Transparency = 1 
+                    hrp.CanCollide = false
                 end
             end
             originalSizes = {}
@@ -539,9 +516,8 @@ Tab:AddToggle({
     end
 })
 
--- ===== Fling Toggle =====
 local FlingConnection = nil
-local FlingForce = 50000 -- Adjust this value for more/less fling power
+local FlingForce = 50000 
 
 Tab:AddToggle({
     Name = "Fling Players (Touch to Launch)",
